@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Solar System</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+		<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+		<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+		<style>
+			#drawingCanvas {
+				height: 96vh;
+				width: 98vw;
+				overflow: hidden;
+				background-color: #000;
+				z-index:0;
+			}
+			
+			.desctiption{
+				width: 200px;
+				margin-bottom: 10px
+			}
+		</style>
+	</head>
+	<body>	    
+		<div  id='root'  style="display:flex"></div>  
+				
+		<canvas id="drawingCanvas"></canvas>	
+		
+	  	
+		<script type="text/babel">		
+		
+			class Planet extends React.Component{
+				constructor(props) {
+					super(props)
+					this.toggle = this.toggle.bind(this)
+					this.state = {showStore: false}
+				}
+				
+			    toggle(){
+				    this.setState({showStore: !this.state.showStore})
+				}
+	  
+			render(){
+				var BlockStyle={
+					position: "absolute",
+					top: "5vw",
+					left: this.props.left,	
+					width: this.props.width,
+					textAlign: 'center',
+					width: "16vw"
+				}
+				
+				var TipStyle={
+					display: this.state.showStore ? 'block' : 'none',					
+					color: 'blue',
+					position: "absolute",
+					transform: `translateX(${this.props.translateX}%) translateY(${this.props.translateY}%)`,
+					Zindex: "10",
+					textAlign: 'center',
+					marginBottom: '10px'
+				}
+				
+				const ImgStyle={
+					width: this.props.width,
+					position: "relative",
+					top: "50vh",
+					'transform': 'translateY(-50%)', 
+					Zindex: "1"
+				}	
+
+				const DescriptionStyle={
+					width: '200px',
+					marginBottom: '10px'
+				} 
+				
+				return(						
+					<div style={BlockStyle}>
+						<div style={TipStyle}>						
+							<h2 style={{marginBottom: '1px'}}>{this.props.name}</h2>
+							<div style={DescriptionStyle}>{this.props.description}</div>
+							<img style={{width: "200px"}} src={this.props.srcSur}/>
+						</div>
+						<img style={ImgStyle} src={this.props.src} onMouseOver={this.toggle} onMouseOut={this.toggle} />
+					</div>
+				);
+			}
+		}
+		
+		ReactDOM.render(
+			<div>
+				<Planet name="Sun"
+					description="Star at the center of the Solar System. Nearly perfect sphere of hot plasma" 
+					src="img/Sun.jpg"
+					left="2vw" width="16vw" translateX="10" translateY="40"/>     
+				<Planet name="Mercury"
+					description="Has a rocky body. Consists of approximately 70% metallic and 30% silicate material." 
+					src="img/Mercury.jpg" 
+					srcSur="img/Mercury_surface.jpg" 
+					left="13vw" width="3vw" translateX="0" translateY="10"/>
+				<Planet name="Venus" 
+					description="Has the densest atmosphere of the four terrestrial planets, consisting of more than 96% carbon dioxide" 
+					src="img/Venus.jpg" 
+					srcSur="img/Venus_surface.jpg" 
+					left="20vw" width="5vw" translateX="0" translateY="-10"/>
+				<Planet name="Earth"
+					description="Here we live :)" 
+					src="img/Earth.jpg" 
+					srcSur="img/Earth_surface.png" 
+					left="28vw" width="5vw" translateX="0" translateY="5"/>		
+				<Planet name="Mars" 
+					description="The closest planet to the Sun. Has a rocky body. consists of approximately 70% metallic and 30% silicate material." 
+					src="img/Mars.jpg" 
+					srcSur="img/Mars_surface.jpg" 
+					left="35vw" width="4vw" translateX="0" translateY="0"/>
+				<Planet name="Jupiter" 
+					description="Primarily composed of hydrogen with a quarter of its mass being helium. The atmosphere contains methane, water vapor, ammonia, and silicon-based compounds." 
+					src="img/Jupiter.jpg" 
+					srcSur="img/Jupiter_surface.jpg" 
+					left="46vw"  width="10vw" translateX="0" translateY="-20"/>	
+				<Planet name="Saturn"
+					description="Despite consisting mostly of hydrogen and helium, most of Saturn's mass is not in the gas phase, because hydrogen becomes liquid when the density is above 0.01 g/cm3" 
+					src="img/Saturn.jpg" 
+					srcSur="img/Saturn_surface.jpg" 
+					left="61vw" width="20vw" translateX="15" translateY="-10"/>	
+				<Planet name="Uranus" 
+					description="Atmosphere is composed primarily of hydrogen and helium, but it contains more ices such as water, ammonia, and methane, along with traces of other hydrocarbons." 
+					src="img/Uranus.jpg" 
+					srcSur="img/Uranus_surface.jpg" 
+					left="77vw" width="6vw"  translateX="0" translateY="-15"/>	
+				<Planet name="Neptune" 
+					description="Atmosphere is composed primarily of hydrogen and helium, but it contains a higher proportion of ices such as water, ammonia, and methane." 
+					src="img/Neptune.jpg" 
+					srcSur="img/Neptune_surface.jpg" 
+					left="85vw" width="6vw" translateX="-20" translateY="-10"/>		
+			</div>,
+			document.getElementById('root')
+        );
+		</script>
+			
+		<script>
+		
+		
+		
+			const S_CONT = 1000;
+			var r = 255;
+			var g = 255;
+			var b = 250;
+
+			var canvas = document.getElementById("drawingCanvas"),
+				context = canvas.getContext("2d"), 		
+				sArr = []; 	
+
+			context.lineWidth = 0.9;  
+
+			for(let i = 0; i < S_CONT; i++) {
+			  sArr.push({
+				x: randomInt(0, canvas.width),
+				y: randomInt(0, canvas.height),
+				op: Math.random(),
+				delta_opacity: 0.1
+			  });
+			}
+
+			var t = setInterval(() => {
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				for (let i = 0; i < S_CONT; i++) {			
+					if (sArr[i].op < 0.1 || sArr[i].op > 0.9) {
+					    sArr[i].delta_opacity = -sArr[i].delta_opacity;	  
+					}
+					sArr[i].op += sArr[i].delta_opacity;				
+					context.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ', ' + sArr[i].op + ')';
+					skyStars(sArr[i].x, sArr[i].y, sArr[i].op);		
+				}
+			}, 200);
+
+			function skyStars(pos_x, pos_y){
+				context.beginPath();
+				context.moveTo(pos_x, pos_y);
+				context.lineTo(pos_x + 0.5*context.lineWidth, pos_y + 0.5*context.lineWidth);
+				context.stroke(); 
+			}
+			
+			function randomInt(min, max) {
+				return Math.floor(Math.random() * (max - min));
+			}
+			
+
+		</script>
+	</body>
+</html>

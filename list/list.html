@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>List</title>
+		<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+		<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+		<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+	</head>	
+	<body>
+		<div id="app"></div>
+		<script type="text/babel">
+			var list = [{
+				id: 1,
+				name: "Список",
+				sub: [
+					{id: 2,
+						name: "Первый пункт" }, 
+					{id: 3,
+						name: "Второй пункт",
+						sub: [
+							{id: 4,
+								name: "Подпункт 2.1"
+							},
+							{id: 5,
+								name: "Подпункт 2.2",
+								sub: [
+									{id: 6,
+										name: "Подпункт 2.2.1"
+									},
+									{id: 7,
+										name: "Подпункт 2.2.2"
+									}
+								]
+							}
+						]
+					}, 
+					{id: 9,
+						name: "Третий пункт"},
+					{id: 10,
+						name: "Четвертный пункт"}
+				]
+			}];
+
+			class List extends React.Component {    
+		  
+				render() {
+				
+					let nodes = list.map((listing) => {
+						return (
+							<Node node={listing} children={listing.sub} />
+						);
+					});       
+				
+					return (
+						<div>
+							<ul className="org">
+								{nodes} 						
+							</ul>        
+						</div>
+					);
+				}
+			}
+
+			class Node extends React.Component {
+				constructor(props){
+						super(props);
+						this.state = {edit: false};				
+					}
+					
+				edit=()=>{
+						this.setState({edit: true});
+					};
+					
+				notedit=()=>{
+						this.setState({edit: false});
+					};	
+					
+				keyPress=(ev)=>{
+					if(ev.keyCode == 13){
+						this.setState({edit: false});
+						ev.target.blur()
+						ev.preventDefault();
+					}
+				}
+				
+				render() {      
+					
+					let childnodes = null;
+					
+					if(this.props.children) {      
+						childnodes = this.props.children.map((childnode) => {
+							return (
+								<Node node={childnode} children={childnode.sub} />						
+							);
+						});
+					}
+					
+					let message;
+					if (this.state.edit) {
+						message = '  в режиме редактирования';
+					} else {
+						message = '';
+					}
+					
+					return (
+						<li key={this.props.node.id} >      
+							<span contentEditable={true} onClick={this.edit} onBlur={this.notedit} onKeyDown={this.keyPress}>
+								{this.props.node.name}
+								<span style={{color: 'rgb(0, 191, 255)'}}>{message}</span>
+							</span> 
+							{ childnodes ? <ul>{childnodes}</ul> : null }
+						</li>
+					);
+				}
+			}
+
+			ReactDOM.render(<List />, document.getElementById('app'));
+		</script>	
+	</body>
+</html>		
